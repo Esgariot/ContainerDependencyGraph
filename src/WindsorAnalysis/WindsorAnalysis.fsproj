@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Component.fs" />
+        <Compile Include="Dependency.fs" />
+        <Compile Include="Library.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Castle.Windsor" Version="5.0.1" />
+      <PackageReference Include="FSharpPlus" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GraphAnalysis\GraphAnalysis.fsproj" />
+    </ItemGroup>
+
+</Project>
