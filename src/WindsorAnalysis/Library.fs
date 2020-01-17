@@ -48,39 +48,47 @@ module WindsorDependency =
 
 
 module Graphviz =
-    let node id color =
-        sprintf "\"%s\" [color=\"%s\"];" id color
+    let node color id = sprintf "\"%s\" [color=\"%s\"];" id color
 
-    let edge source destination color =
-        sprintf "\"%s\" -> \"%s\" [color=\"%s\"];" source destination color
+    let edge color source destination = sprintf "\"%s\" -> \"%s\" [color=\"%s\"];" source destination color
 
 module ContainerGraphComposition =
     open GraphAnalysis.GraphQuery
     open WindsorDependency
 
     // TODO types to prune
-    let nodesWithDescendants all  givenType  =
+    let nodesWithDescendants all givenType =
         let childrenSelector node = componentDependencies all node |> toList
         let nodes = typeToComponents all givenType
         nodes >>= descendants childrenSelector
 
     // TODO types to prune
-    let nodesWithAncestors all  givenType  =
+    let nodesWithAncestors all givenType =
         let childrenSelector node = componentDependencies all node |> toList
         let nodes = typeToComponents all givenType |> toList
         nodes >>= fun x -> ancestors childrenSelector all ((=) x)
 
 
-    let nodeName node transformator =
+    let nodeName transformator node =
         node
         |> typesExposedByComponent
         |>> (string >> transformator)
         |> String.concat "|"
 
     let core types allComponents =
-        seq {
-
-        }
-
-
-
+        types
+        >>= fun x ->
+            seq {
+                yield! nodesWithDescendants allComponents x
+                yield! nodesWithAncestors allComponents x
+            }
+        >>= fun x ->
+            seq {
+                yield x.source
+                      |> nodeName id
+                      |> Graphviz.node "black"
+                yield x.target
+                      |> nodeName id
+                      |> Graphviz.node "black"
+                yield Graphviz.edge "black" (x.source |> nodeName id) (x.target |> nodeName id)
+            }
