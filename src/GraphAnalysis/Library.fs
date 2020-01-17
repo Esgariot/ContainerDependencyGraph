@@ -3,15 +3,33 @@
 open FSharpPlus
 
 module Connections =
-    type 'a Parents =
-        { parents: 'a Parents seq
-          node: 'a }
+    type 'a Link =
+        { source: 'a
+          targets: 'a Link seq }
 
-    type 'a Children =
-        { node: 'a
-          children: 'a Children seq }
+    let link source targets =
+        { source = source
+          targets = targets }
 
-module TreeQuery =
+    type 'a Connection =
+        { source: 'a
+          target: 'a }
+
+    let connection source target =
+        { source = source
+          target = target }
+
+    let reverse (connection: 'a Connection) =
+        { source = connection.target
+          target = connection.source }
+
+    let rec traverse (link: 'a Link): 'a Connection seq =
+        seq {
+            yield! link.targets |>> (fun x -> connection link.source x.source)
+            yield! link.targets >>= traverse
+        }
+
+module GraphQuery =
     open Connections
 
     let roots children_selector all =
@@ -24,40 +42,41 @@ module TreeQuery =
 
     let leaves children_selector all = all |> Seq.filter (children_selector >> Seq.isEmpty)
 
-    let ancestors children_selector all node =
-        let rec searchUntilNode searchedSoFar source =
-            match source
-                  |> children_selector
-                  |> toList with
-            | [] -> []
-            | xs when xs |> exists ((=) node) -> searchedSoFar
-            | xs -> xs >>= searchUntilNode (source :: searchedSoFar)
-        all
-        |> roots children_selector
-        >>= (searchUntilNode [])
+    let descendants_hierarchy children_selector node =
+        let rec children_recursively node' =
+            node'
+            |> children_selector
+            |> Seq.map children_recursively
+            |> Connections.link node'
+        children_recursively node
 
 
     let descendants children_selector node =
-        let rec childrenRecursively node' =
-            match node' |> children_selector with
-            | [] -> []
-            | xs -> node' :: (xs >>= childrenRecursively)
         node
-        |> childrenRecursively
-        |> distinct
+        |> descendants_hierarchy children_selector
+        |> traverse
 
 
-    let ancestors_hierarchy children_selector all search: 'a -> bool =
-        let rec search_all results source =
-            match source.node
+
+    let ancestors_hierarchy children_selector all search =
+        let rec search_all results (source: _ Link) =
+            match source.source
                   |> children_selector
                   |>> (fun x ->
-                  { parents = [ source ]
-                    node = x })
+                  { targets = [ source ]
+                    source = x })
                   |> toList with
             | [] -> results
-            | xs -> xs >>= search_all ((xs |> filter (fun x -> x.node |> search)) @ results)
+            | xs -> xs >>= search_all ((xs |> filter (fun x -> x.source |> search)) @ results)
         all
         |> roots children_selector
-        >>= (fun x->{parents=[];node=x})
+        |>> (fun x ->
+        { targets = []
+          source = x })
         >>= (search_all [])
+
+    let ancestors children_selector all search =
+        search
+        |> ancestors_hierarchy children_selector all
+        >>= traverse
+        |>> reverse

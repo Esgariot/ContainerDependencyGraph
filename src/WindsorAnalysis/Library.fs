@@ -1,5 +1,7 @@
 ﻿namespace WindsorAnalysis
 
+open Castle.Core
+open Castle.Core.Internal
 open FSharpPlus
 open Utility
 open System.Collections.Generic
@@ -16,6 +18,7 @@ module WindsorDependency =
             yield! componentsServingType all givenType
         }
         |> distinct
+        |> filter (fun x -> Component.implementation x <> typeof<LateBoundComponent>)
 
     let sequenceDependencies all dependencyModel =
         dependencyModel
@@ -28,29 +31,56 @@ module WindsorDependency =
     let componentDependencies all node =
         seq {
             yield! node |> (Component.dependents >> Component.componentModelNodes)
-            yield! node |> Component.dependencies >>=sequenceDependencies all
-        } |> distinct
+            yield! node
+                   |> Component.dependencies
+                   >>= sequenceDependencies all
+        }
+        |> distinct
+
+    let typesExposedByComponent node =
+        seq {
+            yield Component.implementation node
+            yield! Component.services node
+        }
+        |> distinct
+        |> filter ((<>) typeof<LateBoundComponent>)
 
 
-//        |> function
-//            | Some (_,false) | None -> zero
-//            | Some (x',true) -> x'.GetGenericArguments()
-//            >>= WindsorServicing.componentsTiedToType all
 
-//    let getSequenceDependents all node =
-//
-//        specialDependents node
-//            |> filter (isAssignableToGenericType (typedefof<_ IEnumerable>))
-//            >>= genericParameterTypes |> toList
-//            >>= (componentsServingType all)
-//
-//    let componentDependents all node =
-//        seq {
-//        yield! node |> (Component.dependents >> Component.componentModelNodes)
-//        yield! node |> getSequenceDependents all
-//        } |> distinct
-//
-//
-//
-//module WindsorQuery =
-//    let rootComponents =
+module Graphviz =
+    let node id color =
+        sprintf "\"%s\" [color=\"%s\"];" id color
+
+    let edge source destination color =
+        sprintf "\"%s\" -> \"%s\" [color=\"%s\"];" source destination color
+
+module ContainerGraphComposition =
+    open GraphAnalysis.GraphQuery
+    open WindsorDependency
+
+    // TODO types to prune
+    let nodesWithDescendants all  givenType  =
+        let childrenSelector node = componentDependencies all node |> toList
+        let nodes = typeToComponents all givenType
+        nodes >>= descendants childrenSelector
+
+    // TODO types to prune
+    let nodesWithAncestors all  givenType  =
+        let childrenSelector node = componentDependencies all node |> toList
+        let nodes = typeToComponents all givenType |> toList
+        nodes >>= fun x -> ancestors childrenSelector all ((=) x)
+
+
+    let nodeName node transformator =
+        node
+        |> typesExposedByComponent
+        |>> (string >> transformator)
+        |> String.concat "|"
+
+    let core types allComponents =
+        seq {
+
+        }
+
+
+
