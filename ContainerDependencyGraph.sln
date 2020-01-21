@@ -6,6 +6,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GraphAnalysis", "src\GraphA
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WindsorAnalysis", "src\WindsorAnalysis\WindsorAnalysis.fsproj", "{E4B90CDE-1316-486F-9547-971CA6772938}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GraphAnalysis.Test", "test\GraphAnalysis.Test\GraphAnalysis.Test.fsproj", "{3DC37B87-5D76-478A-847D-E5998565DC05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DC37B87-5D76-478A-847D-E5998565DC05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DC37B87-5D76-478A-847D-E5998565DC05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DC37B87-5D76-478A-847D-E5998565DC05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DC37B87-5D76-478A-847D-E5998565DC05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,5 @@
 ﻿namespace WindsorAnalysis
 
-open Castle.Core
 open Castle.Core.Internal
 open FSharpPlus
 open Utility
@@ -24,9 +23,9 @@ module WindsorDependency =
         dependencyModel
         |> Dependency.targetType
         |> filter (TypeAnalysis.isAssignableToGenericType typedefof<IEnumerable<_>>)
-        |>> (fun x -> x.GetGenericTypeDefinition())
-        |>> typeToComponents all
+        |>> (fun x -> x.GetGenericArguments() |> seq)
         |> choice
+        >>= typeToComponents all
 
     let componentDependencies all node =
         seq {
@@ -82,13 +81,13 @@ module ContainerGraphComposition =
                 yield! nodesWithDescendants allComponents x
                 yield! nodesWithAncestors allComponents x
             }
-        >>= fun x ->
-            seq {
-                yield x.source
-                      |> nodeName id
-                      |> Graphviz.node "black"
-                yield x.target
-                      |> nodeName id
-                      |> Graphviz.node "black"
-                yield Graphviz.edge "black" (x.source |> nodeName id) (x.target |> nodeName id)
-            }
+            >>= fun x ->
+                seq {
+                    yield x.source
+                          |> nodeName id
+                          |> Graphviz.node "black"
+                    yield x.target
+                          |> nodeName id
+                          |> Graphviz.node "black"
+                    yield Graphviz.edge "black" (x.source |> nodeName id) (x.target |> nodeName id)
+                }

@@ -3,15 +3,15 @@
 open FSharpPlus
 
 module Connections =
-    type 'a Link =
+    type 'a Chain =
         { source: 'a
-          targets: 'a Link seq }
+          targets: 'a Chain seq }
 
     let link source targets =
         { source = source
           targets = targets }
 
-    type 'a Connection =
+    type 'a Link =
         { source: 'a
           target: 'a }
 
@@ -19,11 +19,11 @@ module Connections =
         { source = source
           target = target }
 
-    let reverse (connection: 'a Connection) =
+    let reverse (connection: 'a Link) =
         { source = connection.target
           target = connection.source }
 
-    let rec traverse (link: 'a Link): 'a Connection seq =
+    let rec traverse (link: 'a Chain): 'a Link seq =
         seq {
             yield! link.targets |>> (fun x -> connection link.source x.source)
             yield! link.targets >>= traverse
@@ -59,7 +59,7 @@ module GraphQuery =
 
 
     let ancestors_hierarchy children_selector all search =
-        let rec search_all results (source: _ Link) =
+        let rec search_all results (source: _ Chain) =
             match source.source
                   |> children_selector
                   |>> (fun x ->
