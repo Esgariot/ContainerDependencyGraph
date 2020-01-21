@@ -46,7 +46,7 @@ module WindsorDependency =
 
 
 
-module Graphviz =
+module Dot =
     let node color id = sprintf "\"%s\" [color=\"%s\"];" id color
 
     let edge color source destination = sprintf "\"%s\" -> \"%s\" [color=\"%s\"];" source destination color
@@ -71,10 +71,10 @@ module ContainerGraphComposition =
     let nodeName transformator node =
         node
         |> typesExposedByComponent
-        |>> (string >> transformator)
+        |>> transformator
         |> String.concat "|"
 
-    let core types allComponents =
+    let core types allComponents colorizer nameTransformer =
         types
         >>= fun x ->
             seq {
@@ -84,10 +84,11 @@ module ContainerGraphComposition =
             >>= fun x ->
                 seq {
                     yield x.source
-                          |> nodeName id
-                          |> Graphviz.node "black"
+                          |> nodeName nameTransformer
+                          |> Dot.node (colorizer x.source)
                     yield x.target
-                          |> nodeName id
-                          |> Graphviz.node "black"
-                    yield Graphviz.edge "black" (x.source |> nodeName id) (x.target |> nodeName id)
+                          |> nodeName nameTransformer
+                          |> Dot.node (colorizer x.target)
+                    yield Dot.edge (colorizer x.target) (x.source |> nodeName nameTransformer)
+                              (x.target |> nodeName nameTransformer)
                 }
