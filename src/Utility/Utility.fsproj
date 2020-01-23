@@ -5,11 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="TypeAnalysis.fs" />
-        <Compile Include="Seq.fs" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="FSharpPlus" Version="1.0.0" />
     </ItemGroup>
 

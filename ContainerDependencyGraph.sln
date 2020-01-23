@@ -1,12 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Utility", "src\Utility\Utility.fsproj", "{5D1FB679-D139-46B4-B39F-F56B13855D4F}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GraphAnalysis", "src\GraphAnalysis\GraphAnalysis.fsproj", "{3AF10E9E-4FF9-461F-BC91-6E9150ECE939}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WindsorAnalysis", "src\WindsorAnalysis\WindsorAnalysis.fsproj", "{E4B90CDE-1316-486F-9547-971CA6772938}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GraphAnalysis.Test", "test\GraphAnalysis.Test\GraphAnalysis.Test.fsproj", "{3DC37B87-5D76-478A-847D-E5998565DC05}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ContainerDependencyGraph", "src\ContainerDependencyGraph\ContainerDependencyGraph.fsproj", "{E4B90CDE-1316-486F-9547-971CA6772938}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,21 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5D1FB679-D139-46B4-B39F-F56B13855D4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D1FB679-D139-46B4-B39F-F56B13855D4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D1FB679-D139-46B4-B39F-F56B13855D4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D1FB679-D139-46B4-B39F-F56B13855D4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3AF10E9E-4FF9-461F-BC91-6E9150ECE939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AF10E9E-4FF9-461F-BC91-6E9150ECE939}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AF10E9E-4FF9-461F-BC91-6E9150ECE939}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3AF10E9E-4FF9-461F-BC91-6E9150ECE939}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4B90CDE-1316-486F-9547-971CA6772938}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DC37B87-5D76-478A-847D-E5998565DC05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DC37B87-5D76-478A-847D-E5998565DC05}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DC37B87-5D76-478A-847D-E5998565DC05}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DC37B87-5D76-478A-847D-E5998565DC05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
