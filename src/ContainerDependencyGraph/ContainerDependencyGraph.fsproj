@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Utility/Seq.fs" />
+        <Compile Include="Utility/TypeAnalysis.fs" />
+        <Compile Include="Graph/GraphAnalysis.fs" />
+        <Compile Include="Windsor/Component.fs" />
+        <Compile Include="Windsor/Dependency.fs" />
+        <Compile Include="Windsor/GraphComposition.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Castle.Windsor" Version="5.0.1" />
+        <PackageReference Include="FSharpPlus" Version="1.0.0" />
+    </ItemGroup>
+</Project>
