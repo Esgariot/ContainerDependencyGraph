@@ -24,7 +24,9 @@ module WindsorDependency =
         |> Dependency.targetType
         |> filter (TypeAnalysis.isAssignableToGenericType typedefof<IEnumerable<_>>)
         |>> (fun x -> x.GetGenericArguments() |> seq)
-        |> choice
+        |> function
+        | Some x -> x
+        | None -> Seq.empty
         >>= typeToComponents all
 
     let componentDependencies all node =
@@ -72,7 +74,7 @@ module ContainerGraphComposition =
         node
         |> typesExposedByComponent
         |>> transformator
-        |> String.concat "|"
+        |> String.concat " | "
 
     let core types allComponents colorizer nameTransformer =
         types
@@ -89,6 +91,6 @@ module ContainerGraphComposition =
                     yield x.target
                           |> nodeName nameTransformer
                           |> Dot.node (colorizer x.target)
-                    yield Dot.edge (colorizer x.target) (x.source |> nodeName nameTransformer)
-                              (x.target |> nodeName nameTransformer)
+                    yield Dot.edge (colorizer x.target) (x.target |> nodeName nameTransformer)
+                              (x.source |> nodeName nameTransformer)
                 }
