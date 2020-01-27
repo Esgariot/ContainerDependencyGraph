@@ -1,6 +1,9 @@
 ﻿namespace WindsorAnalysis
 
+open Castle.Core
 open Castle.Core.Internal
+open ContainerDependencyGraph.Graph
+open ContainerDependencyGraph.Utility
 open FSharpPlus
 open Utility
 open System.Collections.Generic
@@ -46,26 +49,15 @@ module WindsorDependency =
         |> distinct
         |> filter ((<>) typeof<LateBoundComponent>)
 
-
-
-module Dot =
-    let node color id = sprintf "\"%s\" [color=\"%s\"];" id color
-
-    let edge color source destination = sprintf "\"%s\" -> \"%s\" [color=\"%s\"];" source destination color
-
 module ContainerGraphComposition =
     open GraphAnalysis.GraphQuery
     open WindsorDependency
 
-    // TODO types to prune
-    let nodesWithDescendants all givenType =
-        let childrenSelector node = componentDependencies all node |> toList
+    let nodesWithDescendants all childrenSelector givenType =
         let nodes = typeToComponents all givenType
         nodes >>= descendants childrenSelector
 
-    // TODO types to prune
-    let nodesWithAncestors all givenType =
-        let childrenSelector node = componentDependencies all node |> toList
+    let nodesWithAncestors all childrenSelector givenType =
         let nodes = typeToComponents all givenType |> toList
         nodes >>= fun x -> ancestors childrenSelector all ((=) x)
 
@@ -76,21 +68,41 @@ module ContainerGraphComposition =
         |>> transformator
         |> String.concat " | "
 
-    let core types allComponents colorizer nameTransformer =
+    let core types allComponents childrenSelector colorizer nameTransformer =
         types
         >>= fun x ->
             seq {
-                yield! nodesWithDescendants allComponents x
-                yield! nodesWithAncestors allComponents x
+                yield! nodesWithDescendants allComponents childrenSelector x
+                yield! nodesWithAncestors allComponents childrenSelector x
             }
             >>= fun x ->
                 seq {
                     yield x.source
                           |> nodeName nameTransformer
-                          |> Dot.node (colorizer x.source)
+                          |> Dot.node (colorizer x.source.LifestyleType)
                     yield x.target
                           |> nodeName nameTransformer
-                          |> Dot.node (colorizer x.target)
-                    yield Dot.edge (colorizer x.target) (x.target |> nodeName nameTransformer)
+                          |> Dot.node (colorizer x.target.LifestyleType)
+                    yield Dot.edge (colorizer x.target.LifestyleType) (x.target |> nodeName nameTransformer)
                               (x.source |> nodeName nameTransformer)
                 }
+
+    let legend colorizer = Enum.Enumerate<LifestyleType> |>> (fun x -> Dot.node (colorizer x) (string x))
+
+    let graph types prune allComponents colorizer typeName =
+        let childrenSelector node =
+            componentDependencies allComponents node
+            |> filter (fun x ->
+                prune
+                |> Seq.exists ((=) x.Implementation)
+                |> not)
+            |> toList
+        seq {
+            yield "digraph {"
+            yield! legend colorizer
+            yield "rankdir=RL"
+            yield "splines=ortho"
+            yield! core types allComponents childrenSelector colorizer typeName
+            yield "}"
+        }
+        |> String.concat "\n"
