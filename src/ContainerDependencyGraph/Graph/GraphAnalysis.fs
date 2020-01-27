@@ -62,9 +62,7 @@ module GraphQuery =
         let rec search_all results (source: _ Chain) =
             match source.source
                   |> children_selector
-                  |>> (fun x ->
-                  { targets = [ source ]
-                    source = x })
+                  |>> (fun x -> link x [source])
                   |> toList with
             | [] -> results
             | xs -> xs >>= search_all ((xs |> filter (fun x -> x.source |> search)) @ results)
