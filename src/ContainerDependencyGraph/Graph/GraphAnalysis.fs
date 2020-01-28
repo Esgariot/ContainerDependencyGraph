@@ -57,21 +57,19 @@ module GraphQuery =
         |> traverse
 
 
-
     let ancestors_hierarchy children_selector all search =
         let rec search_all results (source: _ Chain) =
             match source.source
                   |> children_selector
-                  |>> (fun x -> link x [source])
+                  |>> (fun x -> link x [ source ])
                   |> toList with
             | [] -> results
             | xs -> xs >>= search_all ((xs |> filter (fun x -> x.source |> search)) @ results)
         all
         |> roots children_selector
-        |>> (fun x ->
-        { targets = []
-          source = x })
+        |>> (fun x -> link x [])
         >>= (search_all [])
+
 
     let ancestors children_selector all search =
         search
